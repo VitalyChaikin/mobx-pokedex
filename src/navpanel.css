@@ -1,0 +1,62 @@
+.NavPanel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-size: larger;
+  background-color: #809fff;
+  color: #ffffe6;
+  border-radius: 15px;
+  min-height: 2.5em;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  border: solid;
+  border-color: white;
+}
+
+.lblContainer1 {
+  margin-left: 2em;
+  align-items: center;
+}
+
+.buttonsContainer {
+  flex-direction: row;
+  align-items: center;
+  flex: 9;
+  display: block;
+}
+
+.lblContainer2 {
+  margin-right: 2em;
+  align-items: center;
+}
+
+.lblContainer1 {
+  flex: 1;
+  display: block;
+}
+
+.navButton {
+  background-color: transparent;
+  border: solid;
+  border-width: 2px;
+  color: white;
+  width: 1.8rem;
+  text-align: center;
+  margin: 0.25em;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.navButton:hover {
+  color: red;
+}
+
+#currentPage {
+  color: yellow;
+  font-weight: bolder;
+}
+
+.litemsLoaded {
+  font-size: smaller;
+}

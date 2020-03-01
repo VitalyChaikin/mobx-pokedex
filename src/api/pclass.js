@@ -4,12 +4,17 @@ class MyPokedex {
     this._P = new Pokedex()
 
     this.total = 0 // How many total pokemons
-    this.names = [] // Names of selected pokemons
-    this.dataOffset = 0 // min = 0, max = this.total
+    this.names = [] // Names of received pokemons
+    this.dataOffset = 1 // min = 0, max = this.total
     this.dataRows = [] // Row data selected pokemons
     this._namesOnPage = 10 // How many data-Rows on page
     this.sortColumn = undefined // Current sort column
     this.sortDirection = 1 // Sort direction 1/-1
+    this.interval = {
+      limit: this.namesOnPage - 1,
+      offset: this.dataOffset
+    }
+
     this.promiseResolved = false // Variable for debug
   }
 
@@ -22,11 +27,11 @@ class MyPokedex {
   }
 
   // mark: async - because Promise call inside
-  async Initialize () {
-    let interval = {
-      limit: this.namesOnPage - 1,
-      offset: this.dataOffset
-    }
+  async initialize (resolve, resolveThis) {
+    // let interval = {
+    //     limit: this.namesOnPage-1,
+    //     offset: this.dataOffset
+    // }
     /* RESPONSE EXAMPLE
         {
             count: 964,
@@ -41,55 +46,97 @@ class MyPokedex {
         */
 
     const self = this
+    if (this.isLoadComplete()) {
+      //if( this.total !== 0 && this.dataRows.length >= this.total) {
+      //console.log('pclass#: Stop receive data LEN=', this.dataRows.length, this.total);
+      resolve(resolveThis)
+      return // Stop receive data
+    }
+
     self.promiseResolved = false
-    this.names = []
-    await this._P.getPokemonsList(interval).then(
+    //this.names = [];
+    let responseNames = []
+    await this._P.getPokemonsList(self.interval).then(
       function (response) {
-        self.total = response.count
-        for (let line of response.results) self.names.push(line.name)
+        if (self.total === 0) {
+          self.total = response.count
+          //console.log('self.total', self.total)
+        }
+        //self.names.push(line.name);
+        for (let line of response.results) {
+          let found = self.names.find(function (element) {
+            return element === line.name
+          })
+          if (!found) {
+            self.names.push(line.name)
+            responseNames.push(line.name)
+          }
+          //else
+          //  console.log('DEBUG# Doubled', line.name)
+        }
         self.promiseResolved = true
+        //self.interval.limit = interval.limit;
+        //console.log('self.interval.offset',self.interval.offset,'=',self.names.length + 1)
+        self.interval.offset = self.names.length + 1
+
+        //console.log("responseNames:", responseNames);
+        self.fillDataRows(responseNames, resolve, resolveThis)
       },
-      err => console.log('Error (51): getPokemonsList', err)
+      err => console.log('Error: getPokemonsList', err)
     )
     // console.log('Init #1: this.names', this.names.length);
     // console.log('Init #2: this.dataRows', this.dataRows.length);
   }
 
-  // mark: async - because Promise call inside
-  async FillDataRows () {
+  // !!!!! mark: async - because Promise call inside
+  async fillDataRows (dataNames, throwResolve, throwThis) {
     let self = this
-    this.dataRows = []
+    //this.dataRows = [];
 
     let promises = [] // Stack all promises
 
-    this.names.forEach((v, i) => {
+    //this.names.forEach( (v, i) => {
+    dataNames.forEach((v, i) => {
       // console.log('Add promise - NOT execute');
-      promises.push(
-        new Promise((resolve, reject) => {
-          this._P.getPokemonByName(v).then(function (response) {
-            //console.log(response.name, response.types);
-            self.dataRows.push(
-              self.MapResponse('getPokemonByName', response)
-              // add mapped-response to dataRows
-            )
-            // console.log('Add ', self.dataRows.length, response.id);
-            resolve('Ok')
+      let isNameReceived = false
+      // for (let j=0; j<self.dataRows.length; j++) {
+      //   //console.log('self.dataRows.length', self.dataRows.length)
+      //   //console.log('self.dataRows[j]', self.dataRows[j])
+      //   if (self.dataRows[j].name===v) {
+      //     isNameReceived = true
+      //     console.log('Doubled ## ',v)
+      //     break
+      //   }
+      // }
+      if (!isNameReceived)
+        promises.push(
+          new Promise((resolve, reject) => {
+            this._P.getPokemonByName(v).then(function (response) {
+              //console.log(response.name, response.types);
+              if (!self.isLoadComplete())
+                self.dataRows.push(
+                  self.mapResponse('getPokemonByName', response)
+                  // add mapped-response to dataRows
+                )
+              // console.log('Add ', self.dataRows.length, response.id);
+              resolve('Ok')
+            })
           })
-        })
-      )
+        )
     }) // end forEach()
     // console.log('Fill #0: Promise.all(promises)');
     await Promise.all(promises)
       .then(result => {
         //console.log('Fill #1: all resolved ', result);
-        self.SortDataRows(self.sortColumn)
+        self.sortDataRows(self.sortColumn)
       })
       .catch(error => {
         console.log('error is ', error)
       })
+    throwResolve(throwThis) // Callback - say request finished !
   }
 
-  MapResponse (functionCalledName, response) {
+  mapResponse (functionCalledName, response) {
     // Get something from response
     let mappedResponse = {}
     if ('getPokemonByName' === functionCalledName)
@@ -100,18 +147,28 @@ class MyPokedex {
         weight: response.weight / 10,
         height: response.height,
         base_experience: response.base_experience,
-        ability: this.GetSlot1Ability(response.abilities),
-        type1: this.GetTypeNumber(1, response.types),
-        type2: this.GetTypeNumber(2, response.types)
+        ability: this.getSlot1Ability(response.abilities),
+        type1: this.getTypeNumber(1, response.types),
+        type2: this.getTypeNumber(2, response.types),
+        img: response.sprites['front_default']
       }
     return mappedResponse
   }
 
-  GetColumnName (propName) {
-    return this.GetAllColumnNames()[propName]
+  isLoadComplete () {
+    // Is we are still want receive data ?
+    const LoadCompleted = this.total !== 0 && this.dataRows.length >= this.total // <-- change for 350 if DEBUG
+    // if (LoadCompleted)
+    // console.log('isLoadComplete#: =', LoadCompleted)
+    // console.log('isLoadComplete#: LEN=', this.dataRows.length,'this.total' ,this.total)
+    return LoadCompleted
   }
 
-  GetAllColumnNames () {
+  getColumnName (propName) {
+    return this.getAllColumnNames()[propName]
+  }
+
+  getAllColumnNames () {
     return {
       id: '#',
       name: 'Name',
@@ -121,13 +178,14 @@ class MyPokedex {
       ability: 'Ability',
       type1: 'Type I',
       type2: 'Type II',
+      img: 'hidden', // hidden = dont dysplay this in component
 
       Author: 'Author',
       Description: 'Description'
     }
   }
 
-  GetSlot1Ability (response_abilities) {
+  getSlot1Ability (response_abilities) {
     // ability: {name: "overgrow", url: "https://pokeapi.co/api/v2/ability/65/"}
     // is_hidden: false
     // slot: 1
@@ -138,7 +196,7 @@ class MyPokedex {
     return abilityNameSlot1
   }
 
-  GetTypeNumber (n, response_types) {
+  getTypeNumber (n, response_types) {
     // slot: 1
     // type: {name: "grass", url: "https://pokeapi.co/api/v2/type/12/"}
     let abilityNameSlotN = ''
@@ -148,7 +206,7 @@ class MyPokedex {
     return abilityNameSlotN
   }
 
-  SortDataRows (nameColumn = undefined) {
+  sortDataRows (nameColumn = undefined) {
     this.sortColumn = nameColumn
     if (this.sortColumn === undefined) {
       if (this.dataRows.length === 0) return

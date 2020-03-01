@@ -1,0 +1,276 @@
+@mixin introFont {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+}
+
+@mixin stdColumnStyle($defWidth: 5em) {
+  text-align: center;
+  width: $defWidth;
+}
+
+@mixin strelka($updown) {
+  @if $updown == 1 {
+    content: ' ⇡';
+  } @else {
+    content: ' ⇣';
+  }
+  position: relative;
+  top: (-5 * $updown) px;
+  left: -5px;
+}
+
+.DataTable {
+  background-color: #809fff;
+  color: #ffffe6;
+  font-size: larger;
+  border-radius: 15px;
+  padding: 5px;
+  width: 100%;
+  flex: 1;
+}
+
+.DataRow:hover {
+  color: yellow;
+  cursor: pointer;
+}
+
+.imagePokemon {
+  height: 200px;
+  width: 200px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: block; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  border-radius: 15px;
+  min-width: 510px * 0.8;
+  max-width: 900px * 0.8;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.id,
+.name,
+.weight,
+.height,
+.base_experience,
+.ability,
+.type1,
+.type2 {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.id:hover,
+.name:hover,
+.weight:hover,
+.height:hover,
+.base_experience:hover,
+.ability:hover,
+.type1:hover,
+.type2:hover {
+  color: red;
+}
+
+#sortColumn1,
+#sortColumn-1 {
+  color: yellow;
+}
+
+#sortColumn1::after {
+  @include strelka(1);
+}
+
+#sortColumn-1::after {
+  @include strelka(-1);
+}
+
+.tdAuthor {
+  @include introFont;
+  text-align: center;
+  width: 10em;
+}
+
+.tdDescription {
+  @include introFont;
+}
+
+.tdid {
+  @include stdColumnStyle(4em);
+}
+
+.tdname {
+  text-align: left;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.tdweight {
+  @include stdColumnStyle;
+}
+
+.tdheight {
+  @include stdColumnStyle;
+}
+
+.tdbase_experience {
+  @include stdColumnStyle;
+}
+
+.tdability {
+  @include stdColumnStyle;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.tdtype1,
+.tdtype2 {
+  @include stdColumnStyle(6em);
+}
+
+.tdtype1normal,
+.tdtype2normal {
+  background-color: rgb(61, 158, 82);
+}
+.tdtype1fire,
+.tdtype2fire {
+  background-color: rgb(243, 9, 9);
+}
+.tdtype1water,
+.tdtype2water {
+  background-color: rgb(14, 47, 233);
+}
+.tdtype1electric,
+.tdtype2electric {
+  background-color: rgb(233, 226, 14);
+}
+.tdtype1grass,
+.tdtype2grass {
+  background-color: rgb(174, 240, 42);
+}
+.tdtype1ice,
+.tdtype2ice {
+  background-color: rgb(83, 234, 240);
+}
+.tdtype1fighting,
+.tdtype2fighting {
+  background-color: rgb(241, 45, 248);
+}
+.tdtype1poison,
+.tdtype2poison {
+  background-color: rgb(192, 53, 235);
+}
+.tdtype1ground,
+.tdtype2ground {
+  background-color: rgb(59, 65, 48);
+}
+.tdtype1flying,
+.tdtype2flying {
+  background-color: rgb(111, 195, 188);
+}
+.tdtype1psychic,
+.tdtype2psychic {
+  background-color: rgb(194, 133, 153);
+}
+.tdtype1bug,
+.tdtype2bug {
+  background-color: rgb(80, 71, 19);
+}
+.tdtype1rock,
+.tdtype2rock {
+  background-color: rgb(68, 67, 80);
+}
+.tdtype1ghost,
+.tdtype2ghost {
+  background-color: rgb(230, 205, 220);
+}
+.tdtype1dragon,
+.tdtype2dragon {
+  background-color: rgb(110, 12, 12);
+}
+.tdtype1dark,
+.tdtype2dark {
+  background-color: rgb(5, 5, 5);
+}
+.tdtype1steel,
+.tdtype2steel {
+  background-color: rgb(233, 141, 37);
+}
+.tdtype1fairy,
+.tdtype2fairy {
+  background-color: rgb(3, 236, 224);
+}
+
+.tdtype1normal,
+.tdtype2normal,
+.tdtype1fire,
+.tdtype2fire,
+.tdtype1water,
+.tdtype2water,
+.tdtype1electric,
+.tdtype2electric,
+.tdtype1grass,
+.tdtype2grass,
+.tdtype1ice,
+.tdtype2ice,
+.tdtype1fighting,
+.tdtype2fighting,
+.tdtype1poison,
+.tdtype2poison,
+.tdtype1ground,
+.tdtype2ground,
+.tdtype1flying,
+.tdtype2flying,
+.tdtype1psychic,
+.tdtype2psychic,
+.tdtype1bug,
+.tdtype2bug,
+.tdtype1rock,
+.tdtype2rock,
+.tdtype1ghost,
+.tdtype2ghost,
+.tdtype1dragon,
+.tdtype2dragon,
+.tdtype1dark,
+.tdtype2dark,
+.tdtype1steel,
+.tdtype2steel,
+.tdtype1fairy,
+.tdtype2fairy {
+  @include stdColumnStyle(6em);
+  color: white;
+  text-transform: capitalize;
+  border-radius: 15px;
+}

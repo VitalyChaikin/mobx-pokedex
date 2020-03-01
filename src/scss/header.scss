@@ -1,0 +1,104 @@
+@mixin decorate {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-size: larger;
+  background-color: #809fff;
+  color: #ffffe6;
+  border-radius: 15px;
+  min-height: 2.5em;
+  border: solid;
+  border-color: white;
+}
+
+@mixin onmousemove {
+  cursor: pointer;
+  color: red;
+}
+
+@mixin rombik($direction) {
+  content: '◇';
+  position: relative;
+  top: 0px;
+  left: (7 * $direction) px;
+  font-size: smaller;
+}
+
+.Header {
+  @include decorate;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 2.5em;
+  border: solid;
+  border-color: white;
+}
+
+.IntroButton {
+  @include decorate;
+  justify-content: center;
+  //margin-top: 0.25em;
+}
+
+.IntroButton:hover,
+#lIntroButton:hover {
+  @include onmousemove;
+}
+
+.hSearch {
+  margin-left: 2em;
+  align-items: center;
+}
+
+.hOffset {
+  display: none;
+  margin-left: 1em;
+  margin-right: 2em;
+  align-items: center;
+}
+
+.hItemsPerPage {
+  align-items: center;
+}
+
+.hItemsPerPage::before {
+  @include rombik(-1);
+}
+
+.hItemsPerPage::after {
+  @include rombik(+1);
+}
+
+.hSearchType {
+  margin-right: 2em;
+  align-items: center;
+}
+
+#lOffset {
+  align-items: center;
+  position: relative;
+  top: +0.11em;
+}
+
+#lOffset::after {
+  content: ' (0 - 964)';
+  font-size: 12px;
+}
+
+.hSearch,
+.hItemsPerPage,
+.hOffset {
+  flex: 1;
+  display: block;
+}
+
+#sExpression,
+#sSearchType {
+  width: 6em;
+  margin-left: 0.5em;
+}
+
+#nOffset,
+#nItemsPerPage {
+  width: 4em;
+  margin-left: 0.5em;
+}
